@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -85,7 +86,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initItems();
-        readString(cadena);
+        //readString(cadena);//Prueba sin BT
+        /*
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
@@ -94,11 +96,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             task = fusedLocationProviderClient.getLastLocation();
             fetchLastLocation();
         }
+        */
     }
     public void initItems(){
         tvVolt = (TextView)findViewById(R.id.tvVolts);
         tvEstado = (TextView)findViewById(R.id.tvEstado);
         btnConnect = (Button)findViewById(R.id.btnConectar);
+        btnAbrir = (Button)findViewById(R.id.btnAbrir);
+        btnCerrar = (Button)findViewById(R.id.btnCerrar);
+
     }
 
     public void print(String message){
@@ -292,10 +298,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 case 00:
                     tvEstado.setText("Abierto");
                     break;
-                case 10:
+                case 16:
                     tvEstado.setText("Cerrado");
                     break;
-                case 20:
+                case 32:
                     tvEstado.setText("En Transición");
                     break;
 
@@ -309,8 +315,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
        tvEstado.setText("");
     }
 
-
-
+    void sendAbrir() throws IOException
+    {
+        System.out.println("Estoy en el Abrir");
+        String msg = "$SWITCH_OPEN&";
+        outputStream.write(msg.getBytes());
+    }
+    void sendCerrar() throws IOException
+    {
+        System.out.println("Estoy en el Cerrar");
+        String msg = "$SWITCH_CLOSE&";
+        outputStream.write(msg.getBytes());
+    }
 
 
     @Override
@@ -330,9 +346,38 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
                 break;
+            case R.id.btnAbrir:
+                if (connected) {
+                    try {
+                        sendAbrir();
+                    } catch (IOException ex) {
+                    }
+
+                } else {
+                    showToast("Bluetooth Desconectado");
+                }
+                break;
+            case R.id.btnCerrar:
+                if (connected) {
+                    try {
+                        sendCerrar();
+                    } catch (IOException ex) {
+                    }
+
+                } else {
+                    showToast("Bluetooth Desconectado");
+                }
+                break;
         }
     }
-
+    private void showToast(final String message) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 
 
