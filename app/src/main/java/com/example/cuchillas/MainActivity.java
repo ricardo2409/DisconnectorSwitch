@@ -4,18 +4,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +50,7 @@ import static java.lang.Long.valueOf;
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
 
     TextView tvVolt, tvEstado;
-    Button btnConnect, btnAbrir, btnCerrar;
+    Button btnConnect, btnAbrir, btnCerrar, btnPassword;
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private static final int LOCATION_REQUEST_CODE =101;
@@ -104,6 +109,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         btnConnect = (Button)findViewById(R.id.btnConectar);
         btnAbrir = (Button)findViewById(R.id.btnAbrir);
         btnCerrar = (Button)findViewById(R.id.btnCerrar);
+        btnPassword = (Button)findViewById(R.id.btnPassword);
+
+        btnAbrir.setOnClickListener(this);
+        btnConnect.setOnClickListener(this);
+        btnCerrar.setOnClickListener(this);
+        btnPassword.setOnClickListener(this);
 
     }
 
@@ -327,6 +338,49 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         String msg = "$SWITCH_CLOSE&";
         outputStream.write(msg.getBytes());
     }
+    //Input Dialog para ingresar el password para permitir el cambio a remoto
+    public void showPasswordDialog(final String title, final String message){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final EditText edittext = new EditText(getApplicationContext());
+        edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
+        edittext.setTextColor(getResources().getColor(R.color.black));
+        edittext.setRawInputType(Configuration.KEYBOARD_12KEY);
+        alert.setMessage(message);
+        alert.setTitle(title);
+        alert.setView(edittext);
+
+        alert.setPositiveButton("Ingresar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String pass = edittext.getText().toString();
+                //Pasar el pass con este comando = $PASS=12345,& regresa OK si es correcto o error si incorrecto
+                try{
+                    sendPassword(pass);
+                }catch(IOException e){
+
+                }
+
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Cerrar el input dialog
+                dialog.dismiss();
+                //Regresate a Remoto
+
+            }
+        });
+
+        alert.show();
+    }
+    //Función que manda el password a la tarjeta y poder hacer controles
+    void sendPassword(String pass) throws IOException
+    {
+
+        System.out.println("Estoy en el sendPassword");
+        String msg = "$PASS=" + pass + ",& ";
+        outputStream.write(msg.getBytes());
+    }
 
 
     @Override
@@ -335,9 +389,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             case R.id.btnConectar:
                 if (!connected) {
                     if (BTinit()) {
-
                         BTconnect();
-
                     }
                 } else {
                     try {
@@ -363,6 +415,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         sendCerrar();
                     } catch (IOException ex) {
                     }
+
+                } else {
+                    showToast("Bluetooth Desconectado");
+                }
+                break;
+            case R.id.btnPassword:
+                if (connected) {
+
+                    showPasswordDialog("Ingrese el Password", "");
+
 
                 } else {
                     showToast("Bluetooth Desconectado");
