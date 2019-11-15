@@ -11,13 +11,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="Password" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,12 +18,12 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="440dp"
+                android:layout_height="460dp"
                 android:orientation="vertical">
 
                 <Space
                     android:layout_width="match_parent"
-                    android:layout_height="200dp" />
+                    android:layout_height="150dp" />
 
                 <TextView
                     android:id="@+id/tvEstado"
@@ -40,6 +33,7 @@
                     android:gravity="center_horizontal"
                     android:text="Abierto / Cerrado"
                     android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textSize="48sp"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -50,25 +44,34 @@
 
                     <Button
                         android:id="@+id/btnAbrir"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="200dp"
+                        android:layout_height="100dp"
                         android:layout_weight="1"
-                        android:text="Abrir" />
+                        android:backgroundTint="#00FF00"
+                        android:text="Abrir"
+                        android:textSize="24sp" />
 
                     <Button
                         android:id="@+id/btnCerrar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="200dp"
+                        android:layout_height="100dp"
                         android:layout_weight="1"
-                        android:text="Cerrar" />
+                        android:backgroundTint="#FF0000"
+                        android:text="Cerrar"
+                        android:textSize="24sp" />
                 </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp" />
 
                 <TextView
                     android:id="@+id/tvVolts"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:textSize="30sp" />
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -106,8 +109,10 @@
         <Button
             android:id="@+id/btnConectar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Conectar a Bluetooth" />
+            android:layout_height="70dp"
+            android:layout_gravity="bottom"
+            android:text="Conectar a Bluetooth"
+            android:textSize="20sp" />
 
     </LinearLayout>
 

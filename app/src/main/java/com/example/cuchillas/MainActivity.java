@@ -50,7 +50,7 @@ import static java.lang.Long.valueOf;
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
 
     TextView tvVolt, tvEstado;
-    Button btnConnect, btnAbrir, btnCerrar, btnPassword;
+    Button btnConnect, btnAbrir, btnCerrar;
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private static final int LOCATION_REQUEST_CODE =101;
@@ -58,7 +58,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private Task<Location> task;
 
     boolean connected = false;
-    String cadena = "F1 00 0F 00 D2 21 00 10 00 00 00 32 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F2";
+    String cadena = "F1 00 0F 00 D2 21 00 02 00 00 00 32 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F2";
     private static final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     public static BluetoothDevice device;
     public static BluetoothSocket socket;
@@ -91,7 +91,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initItems();
-        //readString(cadena);//Prueba sin BT
+        readString(cadena);//Prueba sin BT
         /*
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -109,12 +109,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         btnConnect = (Button)findViewById(R.id.btnConectar);
         btnAbrir = (Button)findViewById(R.id.btnAbrir);
         btnCerrar = (Button)findViewById(R.id.btnCerrar);
-        btnPassword = (Button)findViewById(R.id.btnPassword);
 
         btnAbrir.setOnClickListener(this);
         btnConnect.setOnClickListener(this);
         btnCerrar.setOnClickListener(this);
-        btnPassword.setOnClickListener(this);
 
     }
 
@@ -309,10 +307,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 case 00:
                     tvEstado.setText("Abierto");
                     break;
-                case 16:
+                case 01:
                     tvEstado.setText("Cerrado");
                     break;
-                case 32:
+                case 02:
                     tvEstado.setText("En Transición");
                     break;
 
@@ -323,7 +321,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void resetFields(){
        tvVolt.setText("");
-       tvEstado.setText("");
+       tvEstado.setText("Abierto / Cerradp");
     }
 
     void sendAbrir() throws IOException
@@ -420,16 +418,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     showToast("Bluetooth Desconectado");
                 }
                 break;
-            case R.id.btnPassword:
-                if (connected) {
 
-                    showPasswordDialog("Ingrese el Password", "");
-
-
-                } else {
-                    showToast("Bluetooth Desconectado");
-                }
-                break;
         }
     }
     private void showToast(final String message) {
